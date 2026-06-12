@@ -1,0 +1,11 @@
+footage/
+**/__pycache__/
+**/.cache/
+**/*.pyc
+**/.git/
+**/.github/
+**/.cursor/
+*.egg-info/
+*.log
+.venv/
+venv/

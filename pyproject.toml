@@ -1,0 +1,30 @@
+[project]
+name = "video-clippy"
+version = "0.1.0"
+description = "Video Clippy — transcribe, cut, and render YouTube clips from long-form footage"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "requests>=2.28",
+    "numpy>=1.24",
+    "pillow>=10.0",
+    "matplotlib>=3.7",
+    "librosa>=0.10",
+    "soundfile>=0.12",
+    "faster-whisper>=1.0",
+    "opencv-python-headless>=4.8",
+]
+
+[project.optional-dependencies]
+dev = ["ruff"]
+
+[project.scripts]
+video-clippy = "studio.cli:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["studio*"]

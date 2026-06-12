@@ -1,0 +1,18 @@
+services:
+  clippy:
+    build: .
+    image: video-clippy:latest
+    environment:
+      VIDEO_CLIPPY_ROOT: /studio
+      VIDEO_USE_GPU: "0"
+      # Optional: ElevenLabs transcription
+      # ELEVENLABS_API_KEY: ${ELEVENLABS_API_KEY}
+    volumes:
+      - ./footage:/studio/footage
+      - clippy-cache:/studio/.cache
+    # Override default entrypoint args, e.g.:
+    #   docker compose run --rm clippy batch
+    #   docker compose run --rm clippy render edls/clip.json -o clips/out.mp4
+
+volumes:
+  clippy-cache:
