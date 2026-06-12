@@ -2,7 +2,14 @@
 
 Turn long-form talking-head footage into **3+ minute YouTube clips** — transcribed with local Whisper, cut on phrase boundaries, rendered at 1080p with an optional outro.
 
-Built on the [video-use](https://github.com/browser-use/video-use) editing helpers.
+Video Clippy wraps and extends two open-source projects:
+
+| Project | What it provides | Repo |
+|---------|------------------|------|
+| **[video-use](https://github.com/browser-use/video-use)** | Transcription, EDL rendering, grading, horizontal clip engine, outro compositing | [browser-use/video-use](https://github.com/browser-use/video-use) |
+| **[HyperFrames](https://github.com/heygen-com/hyperframes)** | HTML/CSS motion graphics — title cards, lower thirds, animated overlays (optional) | [heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) |
+
+The batch pipeline and CLI in this repo sit on top of video-use. HyperFrames is not bundled here, but pairs well when you want AI-assisted motion graphics on top of your clips.
 
 ## Features
 
@@ -95,10 +102,83 @@ video-clippy/
 
 Batch progress is saved in `footage/.studio/batch-state.json` — safe to stop and resume.
 
+## Using with AI (Cursor, Claude, ChatGPT, etc.)
+
+Video Clippy is designed to be driven by conversation. An AI agent reads your transcripts and EDLs, runs the CLI, and iterates on clip boundaries — you review, give feedback, it re-renders.
+
+### Setup
+
+1. Clone this repo and `pip install -e .`
+2. Install **ffmpeg** and (optionally) **faster-whisper** deps via the install step above
+3. Open the folder in **[Cursor](https://cursor.com)** or any AI IDE that can run terminal commands
+4. Drop raw `.mp4` files in `footage/` plus an optional `footage/outro.mp4`
+
+### Automated batch (hands-off)
+
+Ask the AI:
+
+> Process everything in `footage/` into YouTube clips. Use `video-clippy batch`, 1080p finals with outro.
+
+The agent runs:
+
+```bash
+video-clippy batch --list   # see queue
+video-clippy batch          # transcribe → plan → render → export
+```
+
+Outputs land in `footage/<Title> (Clips)/`. Safe to stop mid-run — progress is in `footage/.studio/batch-state.json`.
+
+### Guided editing (more control)
+
+For finer cuts, work one video at a time:
+
+1. **Transcribe**
+   ```bash
+   video-clippy transcribe footage/my-video.mp4
+   video-clippy pack --edit-dir footage/edit/my-slug
+   ```
+2. **Read** `footage/edit/<slug>/takes_packed.md` — the AI uses this to understand what's in the video
+3. **Tell the AI what you want**, e.g.:
+   - *"Make 3 clips about the solar setup, kitchen tour, and intro. Each at least 3 minutes."*
+   - *"Clip 2 should start right before 'came back to Canada' — check the transcript."*
+   - *"Extend the last clip to finish the sentence at 8:24."*
+4. The AI edits `footage/edit/<slug>/clips.json` (or `build_clips.py` anchors), validates, and renders:
+   ```bash
+   video-clippy batch --only my-slug
+   # or per-project:
+   python footage/edit/my-slug/build_clips.py --validate-only
+   python footage/edit/my-slug/build_clips.py --final --force
+   ```
+
+### Tips for good AI results
+
+- **Point at the transcript** — clip boundaries should land on phrase edges, never mid-word
+- **One topic per clip** — ask for continuous takes, not jump cuts, unless you want topic compilation
+- **Review drafts first** — `build_clips.py --draft` renders fast 720p previews before finals
+- **Iterate in plain language** — *"clip 1 audio goes dead at 1:05, skip the corrupt section"* beats tweaking timestamps yourself
+- **Motion graphics (optional)** — for lower thirds or title cards, install [HyperFrames](https://github.com/heygen-com/hyperframes) (`npx hyperframes`) and ask the AI to composite overlays via `video-use/helpers/render.py`
+
+### Example Cursor prompt
+
+```
+I dropped 4 van tour videos in footage/. For each one:
+1. Run video-clippy batch (skip any already done)
+2. Each clip should be 3+ minutes, continuous takes on phrase boundaries
+3. Put finals in the (Clips) folders with outro
+
+If a clip title is ugly, rename from the transcript content.
+Tell me when each video finishes.
+```
+
+## Acknowledgements
+
+- **[browser-use/video-use](https://github.com/browser-use/video-use)** — conversation-driven editing engine, Whisper transcription helpers, EDL format, render pipeline. MIT License.
+- **[heygen-com/hyperframes](https://github.com/heygen-com/hyperframes)** — HTML-based motion graphics for overlays and title cards. Used optionally alongside this project. See their repo for license terms.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Video-use helpers are MIT-licensed from [browser-use/video-use](https://github.com/browser-use/video-use).
+MIT — see [LICENSE](LICENSE). See [Acknowledgements](#acknowledgements) for upstream projects.

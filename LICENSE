@@ -22,5 +22,11 @@ SOFTWARE.
 
 ---
 
-The video-use helpers in video-use/helpers/ are derived from
+## Third-party components
+
+**video-use** — The helpers in `video-use/helpers/` are derived from
 https://github.com/browser-use/video-use (MIT License, Copyright Browser Use).
+
+**HyperFrames** — Not included in this repository. Optional motion graphics
+integration references https://github.com/heygen-com/hyperframes. See that
+project for license terms.
