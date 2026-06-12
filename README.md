@@ -161,13 +161,13 @@ For finer cuts, work one video at a time:
 ### Example Cursor prompt
 
 ```
-I dropped 4 van tour videos in footage/. For each one:
+I dropped 4 podcast episodes in footage/. For each one:
 1. Run video-clippy batch (skip any already done)
-2. Each clip should be 3+ minutes, continuous takes on phrase boundaries
-3. Put finals in the (Clips) folders with outro
+2. Split into 3+ minute clips by topic — one continuous take per clip, no mid-word cuts
+3. Title each clip from the guest's main point in that segment
+4. Put finals in the (Clips) folders with outro
 
-If a clip title is ugly, rename from the transcript content.
-Tell me when each video finishes.
+If two clips cover the same topic, merge them. Tell me when each episode finishes.
 ```
 
 ## Acknowledgements
